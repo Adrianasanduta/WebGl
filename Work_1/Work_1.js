@@ -33,9 +33,15 @@ const up = vec3(0.0, 1.0, 0.0);
 
 //light
 var lightPosition = vec4(1.0, 1.0, -1.0, 0.0);
+var lightPosition1 = vec4(1.0, 1.0, 1.0, 0.0);
+var lightPosition2 = vec4(0.0, 1.0, 1.0, 0.0);
 var lightAmbient = vec4(0.2, 0.2, 0.2, 1.0);
 var lightDiffuse = vec4(1.0, 1.0, 1.0, 1.0);
+var lightDiffuse1 = vec4(1.0, 1.0, 1.0, 1.0);
+var lightDiffuse2 = vec4(1.0, 1.0, 1.0, 1.0);
 var lightSpecular = vec4(1.0, 1.0, 1.0, 1.0);
+var lightSpecular1 = vec4(1.0, 1.0, 1.0, 1.0);
+var lightSpecular2 = vec4(1.0, 1.0, 1.0, 1.0);
 
 var materialAmbient = vec4(1.0, 0.0, 1.0, 1.0);
 var materialDiffuse = vec4(1.0, 0.8, 0.0, 1.0);
@@ -242,16 +248,32 @@ window.onload = function init() {
 
             var ambientProduct = mult(lightAmbient, materialAmbient);
             var diffuseProduct = mult(lightDiffuse, materialDiffuse);
+            var diffuseProduct1 = mult(lightDiffuse1, materialDiffuse);
+            var diffuseProduct2 = mult(lightDiffuse2, materialDiffuse);
             var specularProduct = mult(lightSpecular, materialSpecular);
+            var specularProduct1 = mult(lightSpecular1, materialSpecular);
+            var specularProduct2 = mult(lightSpecular2, materialSpecular);
 
             gl.uniform4fv(gl.getUniformLocation(program, "ambientProduct"),
                 flatten(ambientProduct));
             gl.uniform4fv(gl.getUniformLocation(program, "diffuseProduct"),
                 flatten(diffuseProduct));
+                gl.uniform4fv(gl.getUniformLocation(program, "diffuseProduct1"),
+                flatten(diffuseProduct1));
+                gl.uniform4fv(gl.getUniformLocation(program, "diffuseProduct2"),
+                flatten(diffuseProduct2));
             gl.uniform4fv(gl.getUniformLocation(program, "specularProduct"),
                 flatten(specularProduct));
+                gl.uniform4fv(gl.getUniformLocation(program, "specularProduct1"),
+                flatten(specularProduct1));
+                gl.uniform4fv(gl.getUniformLocation(program, "specularProduct2"),
+                flatten(specularProduct2));
             gl.uniform4fv(gl.getUniformLocation(program, "lightPosition"),
                 flatten(lightPosition));
+                gl.uniform4fv(gl.getUniformLocation(program, "lightPosition1"),
+                flatten(lightPosition1));
+                gl.uniform4fv(gl.getUniformLocation(program, "lightPosition2"),
+                flatten(lightPosition2));
 
             gl.uniform1f(gl.getUniformLocation(program, "shininess"), materialShininess);
 
@@ -859,21 +881,41 @@ window.onload = function init() {
     shininess_Slider.oninput = function () {
         materialShininess = this.value;
     } 
-    var ambient_Slider = document.getElementById("ambientSlider");
-    ambient_Slider.oninput = function () {
-        materialAmbient = vec4(this.value*1.0, this.value, this.value*1.0, this.value*1.0);
-    }
     var diffuse_Slider = document.getElementById("diffuseSlider");
     diffuse_Slider.oninput = function () {
-        materialDiffuse = vec4(this.value, this.value, this.value, this.value);
+        const [red, green, blue] = getRGBfromHex(this.value);
+        lightDiffuse = vec4(red, green, blue, 1.0);
     }
+    var diffuse1_Slider = document.getElementById("diffuse1Slider");
+    diffuse1_Slider.oninput = function () {
+        const [red, green, blue] = getRGBfromHex(this.value);
+        lightDiffuse1 = vec4(red, green, blue, 1.0);
+    }
+    var diffuse2_Slider = document.getElementById("diffuse2Slider");
+    diffuse2_Slider.oninput = function () {
+        const [red, green, blue] = getRGBfromHex(this.value);
+        lightDiffuse2 = vec4(red, green, blue, 1.0);
+    }
+
+
     var specular_Slider = document.getElementById("specularSlider");
     specular_Slider.oninput = function () {
-        materialSpecular = vec4(this.value, this.value, this.value, this.value);
-
-
-
+        const [red, green, blue] = getRGBfromHex(this.value);
+        lightSpecular = vec4(red, green, blue, 1.0);
     }
+    var specular1_Slider = document.getElementById("specular1Slider");
+    specular1_Slider.oninput = function () {
+        const [red, green, blue] = getRGBfromHex(this.value);
+        lightSpecular1 = vec4(red, green, blue, 1.0);
+    }
+    var specular2_Slider = document.getElementById("specular2Slider");
+    specular2_Slider.oninput = function () {
+        const [red, green, blue] = getRGBfromHex(this.value);
+        lightSpecular2 = vec4(red, green, blue, 1.0);
+    }
+
+
+
     var materialAmbient_Slider = document.getElementById("MaterialAmbientSlider");
     materialAmbient.oninput = function () {
         materialAmbient = vec4(this.value, this.value, this.value, this.value);
@@ -886,9 +928,19 @@ window.onload = function init() {
     MaterialSpecular_Slider.oninput = function () {
         materialSpecular = vec4(this.value, this.value, this.value, this.value);
     }
+
+    
+    var lightposition_Slider = document.getElementById("lightPositionSlider");
+    lightposition_Slider.oninput = function () {
+        lightPosition = vec4(this.value, this.value, this.value/2, this.value);
+    }
     var lightposition1_Slider = document.getElementById("lightPosition1Slider");
     lightposition1_Slider.oninput = function () {
-        lightPosition = vec4(this.value, this.value, this.value, this.value);
+        lightPosition = vec4(this.value, this.value, -this.value, this.value);
+    }
+    var lightposition2_Slider = document.getElementById("lightPosition2Slider");
+    lightposition2_Slider.oninput = function () {
+        lightPosition = vec4(-this.value, this.value, this.value, this.value);
     }
     function getRGBfromHex(hexValue) {
         const reg = /#([0-9a-fA-F]{2})([0-9a-fA-F]{2})([0-9a-fA-F]{2})/;
@@ -897,7 +949,7 @@ window.onload = function init() {
         return colors;
       }
       
-      const colorPicker = document.getElementById("color");
+      const colorPicker = document.getElementById("lightAmbient");
       colorPicker.oninput = function() {
         const [red, green, blue] = getRGBfromHex(this.value);
         lightAmbient = vec4(red, green, blue, 1.0);
