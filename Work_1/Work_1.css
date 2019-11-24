@@ -1,0 +1,90 @@
+
+.leftMenu{
+    position: absolute;
+    top:1%;
+    left:2%;
+}
+.menuCamera{
+    position: absolute;
+    top:1%;
+    right:30%;
+}
+.object_buttons{
+    background-color: rgb(15, 15, 15);
+    color: rgb(255, 255, 255);
+    padding: 3px 13px;
+    font-size: 15px;
+    border-radius: 30px;
+    border: none;
+    font-style: thin ; 
+    font-family: Helvetica Neue LT Pro;
+    position: absolute;
+    top: 10%;
+    right: 5;
+
+}
+.dropbtn {
+    background-color: rgb(15, 15, 15);
+    color: rgb(255, 255, 255);
+    padding: 3px 13px;
+    font-size: 25px;
+    border-radius: 30px;
+    border: none;
+    font-style: thin ; 
+    font-family: Helvetica Neue LT Pro;
+}
+.dropdown {
+    position: absolute;
+    top: 5%;
+    right: 15%;
+    display: inline-block;
+    background-color: #ffffff;
+}
+
+.dropdown-content {
+    display: none;
+    position: absolute;
+    background-color: 	rgb(255, 255, 255);
+    min-width: 160px;
+    box-shadow: 0px 8px 16px 0px rgba(0,0,0,0.2);
+    z-index: 1;
+}
+
+.dropdown-content a {
+    display: none;
+    position: absolute;
+    background-color: #ffffff;
+    min-width: 300px;
+    box-shadow: 0px 8px 16px 0px rgba(160, 160, 160, 0.2);
+    z-index: 1;
+}
+
+.slider {
+    -webkit-appearance: none;  /* Override default CSS styles */
+    appearance: none;
+    width: 60%; /* Full-width */
+    height: 15px; /* Specified height */
+    background: #d3d3d3; /* Grey background */
+    outline: none; /* Remove outline */
+    opacity: 0.7; /* Set transparency (for mouse-over effects on hover) */
+    -webkit-transition: .2s; /* 0.2 seconds transition on hover */
+    transition: opacity .2s;
+}
+.slider::-webkit-slider-thumb {
+    -webkit-appearance: none; /* Override default look */
+    appearance: none;
+    width: 15px; /* Set a specific slider handle width */
+    height: 15px; /* Slider handle height */
+    background: rgb(0, 0, 0); /* Green background */
+    cursor: pointer; /* Cursor on hover */
+    border-radius: 30px;
+
+}
+.dropdown-content a:hover {background-color: 	rgb(214, 221, 221);}
+
+.dropdown:hover .dropdown-content {display: block;}
+
+.dropdown:hover .dropbtn {background-color: #D3D3D3;}
+
+
+

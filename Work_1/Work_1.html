@@ -1,0 +1,340 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta http-equiv="Content-Type" content="text/html;charset=utf-8">
+    <title>lab4</title>
+
+
+    <script id="vertex-shader" type="x-shader/x-vertex">
+attribute  vec4 vPosition;
+varying vec4 fColor;
+attribute vec3 vNormal;
+
+uniform vec3 theta;
+uniform vec3 tr;
+uniform vec3 scale;
+attribute vec4 vColor;
+uniform mat4 modelViewMatrix;
+uniform mat4 projectionMatrix;
+
+uniform vec4 ambientProduct, diffuseProduct, specularProduct;
+uniform vec4 lightPosition;
+uniform float shininess;
+
+
+void
+main()
+{
+    // Compute the sines and cosines of theta for each of
+    //   the three axes in one computation.
+    vec3 angles = radians( theta );
+    vec3 c = cos( angles );
+    vec3 s = sin( angles );
+
+    // Remeber: thse matrices are column-major
+    mat4 rx = mat4( 1.0,  0.0,  0.0, 0.0,
+            0.0,  c.x,  s.x, 0.0,
+            0.0, -s.x,  c.x, 0.0,
+            0.0,  0.0,  0.0, 1.0 );
+
+    mat4 ry = mat4( c.y, 0.0, -s.y, 0.0,
+            0.0, 1.0,  0.0, 0.0,
+            s.y, 0.0,  c.y, 0.0,
+            0.0, 0.0,  0.0, 1.0 );
+
+    mat4 rz = mat4( c.z, s.z, 0.0, 0.0,
+            -s.z,  c.z, 0.0, 0.0,
+            0.0,  0.0, 1.0, 0.0,
+            0.0,  0.0, 0.0, 1.0 );
+
+        //translate matrix
+    mat4 t= mat4( 1.0, 0.0, 0.0, 0,
+                  0.0, 1.0, 0.0, 0,
+                  0.0, 0.0, 1.0, 0,
+                  tr.xyz, 1.0 );
+        //scale matrix
+    mat4 scl = mat4(scale.x, 0,  0,  0,
+                0, scale.y,  0,  0,
+                0,  0, scale.z,  0,
+                0,  0,  0,  1);
+    
+    vec3 pos = (modelViewMatrix * vPosition).xyz;
+    
+    mat4 myMatrix =  rz*ry*rx *modelViewMatrix;
+
+    mat3 vNormalMatrix = mat3(
+        myMatrix[0][0],myMatrix[0][1],myMatrix[0][2],
+        myMatrix[1][0],myMatrix[1][1],myMatrix[1][2],
+        myMatrix[2][0],myMatrix[2][1],myMatrix[2][2]
+    );
+    //fixed light postion
+    
+    vec3 light = lightPosition.xyz;
+    vec3 L = normalize( light - pos );
+
+	
+    vec3 E = normalize( -pos );
+    vec3 H = normalize( L + E );
+    
+    vec4 NN = vec4(vNormal,0);
+
+    // Transform vertex normal into eye coordinates
+       
+    vec3 N = normalize( (vNormalMatrix*vNormal).xyz);
+
+    // Compute terms in the illumination equation
+    vec4 ambient = ambientProduct;
+
+    float Kd = max( dot(L, N), 0.0 );
+    vec4  diffuse = Kd*diffuseProduct;
+
+    float Ks = pow( max(dot(N, H), 0.0), shininess );
+    vec4  specular = Ks * specularProduct;
+
+    if( dot(L, N) < 0.0 ) {
+        specular = vec4(0.0, 0.0, 0.0, 1.0);
+        } 
+
+    //gl_Position = rx * ry * rz * vPosition * projectionMatrix * modelViewMatrix;
+
+    fColor = ambient + diffuse +specular;
+    
+    fColor.a = 1.0;
+
+    gl_Position =  projectionMatrix * modelViewMatrix*t * rz * ry * rx * scl * vPosition ;
+
+    //gl_Position = projectionMatrix  * rz * ry * rx * modelViewMatrix * vPosition;
+  
+    }
+</script>
+
+    <script id="fragment-shader" type="x-shader/x-fragment">
+precision mediump float;
+varying vec4 fColor;
+
+void
+main()
+{
+   gl_FragColor = fColor;
+}
+</script>
+    <script type="text/javascript" src="../Common/webgl-utils.js"></script>
+    <script type="text/javascript" src="../Common/initShaders.js"></script>
+    <script type="text/javascript" src="../Common/MV.js"></script>
+    <script type="text/javascript" src="Work_1.js"></script>
+    <link rel="stylesheet" type="text/css" href="Work_1.css">
+</head>
+
+
+
+
+<body>
+    <canvas id="gl-canvas" width="1000" height="512">
+        Oops ... your browser doesn't support the HTML5 canvas element
+    </canvas>
+    <br />
+
+    <div class="left_menu_button">
+        <button style="background:magenta ; border-radius: 30px; color: white; border: none; padding: 3px 13px; font-size: 25px; position: absolute; top: 5%; right: 93%; font-style: thin ;"
+            ; id="GetCone">Cone</button>
+        <button style="background:black ; border-radius: 30px; color: white; border: none; padding: 3px 13px; font-size: 25px; position: absolute; top: 5%; right: 85%; font-style: thin ; "
+            ; id="GetCylinder">Cylinder</button>
+        <button style="background:orange ; border-radius: 30px; color: white; border: none; padding: 3px 13px; font-size: 25px; position: absolute; top: 5%; right: 77.5%; font-style: thin ; "
+            ; id="GetSphere">Sphere</button>
+        
+
+    </div>
+
+
+
+    <div class="dropdown">
+        <button class="dropbtn">Menu</button>
+        <div class="dropdown-content">
+
+            <button style="background:rgb(15, 15, 15) ; border: none; border-radius: 12px; color: white; font-style: thin ; font-family: Helvetica Neue LT Pro;"
+                id="xButton">Rotate X</button>
+            <button style="background:rgb(15, 15, 15) ; border: none; border-radius: 12px; color: white; font-style: thin ; font-family: Helvetica Neue LT Pro;"
+                id="yButton">Rotate Y</button>
+            <button style="background:rgb(15, 15, 15) ; border: none; border-radius: 12px; color: white; font-style: thin ; font-family: Helvetica Neue LT Pro;"
+                id="zButton">Rotate Z</button>
+            <button style="background:rgb(15, 15, 15) ; border: none; border-radius: 12px; color: white; font-style: thin ; font-family: Helvetica Neue LT Pro;"
+                id="sButton">Stop Rotation</button>
+
+
+            <div>
+                <h1 style="font-style: thin ; font-family: Helvetica Neue LT Pro;  font-size: 16px;">
+                    TranslateX <input id="xTranslationSlider" type="range" min="-2.5" max="2.5" step="0.01" value="0"
+                        class="slider" />
+                </h1>
+            </div>
+
+            <div>
+                <h1 style="font-style: thin ; font-family: Helvetica Neue LT Pro;  font-size: 16px;">
+                    TranslateY <input id="yTranslationSlider" type="range" min="-2.5" max="2.5" step="0.01" value="0"
+                        class="slider" />
+                </h1>
+            </div>
+
+            <div>
+                <h1 style="font-style: thin ; font-family: Helvetica Neue LT Pro;  font-size: 16px;">
+
+                    TranslateZ <input id="zTranslationSlider" type="range" min="-2.5" max="2.5" step="0.01" value="0"
+                        class="slider" />
+                </h1>
+            </div>
+            <h1 style="font-style: thin ; font-family: Helvetica Neue LT Pro;  font-size: 16px;display:none;">Red
+                <input id="R_slider" type="range" min="0" max="1" step="0.01" value="0.5" class="slider" /></h1>
+            <div>
+            </div>
+
+            <h1 style="font-style: thin ; font-family: Helvetica Neue LT Pro;  font-size: 16px;display:none;">Green
+                <input id="G_slider" type="range" min="0" max="1" step="0.01" value="1" class="slider" /></h1>
+            <div>
+            </div>
+
+            <h1 style="font-style: thin ; font-family: Helvetica Neue LT Pro;  font-size: 16px;display:none;">Blue
+                <input id="B_slider" type="range" min="0" max="1" step="0.01" value="1" class="slider" /></h1>
+
+
+            <h1 style="font-style: thin ; font-family: Helvetica Neue LT Pro;  font-size: 16px;">Transparency
+                <input id="T_slider" type="range" min="0" max="1" step="0.01" value="1" class="slider" /></h1>
+
+            <div>
+                <h1 style="font-style: thin ; font-family: Helvetica Neue LT Pro;  font-size: 16px;">
+
+                    ScaleX <input id="xScaleSlider" type="range" min="0" max="2" step="0.01" value="1" class="slider" />
+                </h1>
+            </div>
+
+            <div>
+                <h1 style="font-style: thin ; font-family: Helvetica Neue LT Pro;  font-size: 16px;">
+
+                    ScaleY <input id="yScaleSlider" type="range" min="0" max="2" step="0.01" value="1" class="slider" />
+                </h1>
+            </div>
+
+            <div>
+                <h1 style="font-style: thin ; font-family: Helvetica Neue LT Pro;  font-size: 16px;">
+
+                    ScaleZ <input id="zScaleSlider" type="range" min="0" max="2" step="0.01" value="1" class="slider" />
+                </h1>
+            </div>
+
+            <div>
+                <h1 style="font-style: thin ; font-family: Helvetica Neue LT Pro;  font-size: 16px;">
+
+                    Near<input id="zNearSlider" type="range" min=".01" max="3" step="0.1" value="0.3" class="slider" />
+                </h1>
+            </div>
+
+            <div>
+                <h1 style="font-style: thin ; font-family: Helvetica Neue LT Pro;  font-size: 16px;">
+
+                    zFar <input id="zFarSlider" type="range" min="-3" max="15" step="1.0" value="3" class="slider" />
+
+                </h1>
+            </div>
+            <div>
+                <h1 style="font-style: thin ; font-family: Helvetica Neue LT Pro;  font-size: 16px;">
+
+                    radius <input id="radiusSlider" type="range" min="0.05" max="10" step="0.1" value="4" class="slider" />
+
+                </h1>
+            </div>
+            <div>
+                <h1 style="font-style: thin ; font-family: Helvetica Neue LT Pro;  font-size: 16px;">
+
+                    theta <input id="thetaSlider" type="range" min="-90" max="90" step="5" value="0" class="slider" />
+
+                </h1>
+            </div>
+            <div>
+                <h1 style="font-style: thin ; font-family: Helvetica Neue LT Pro;  font-size: 16px;">
+
+                    phi <input id="phiSlider" type="range" min="-90" max="90" step="5" value="0" class="slider" />
+
+                </h1>
+            </div>
+            <div>
+                <h1 style="font-style: thin ; font-family: Helvetica Neue LT Pro;  font-size: 16px;">
+
+                    fov <input id="fovSlider" type="range" min="10" max="120" step="5" value="45" class="slider" />
+
+                </h1>
+            </div>
+            <div>
+                <h1 style="font-style: thin ; font-family: Helvetica Neue LT Pro;  font-size: 16px;">
+
+                    aspect <input id="aspectSlider" type="range" min="0.5" max="2" step="0.1" value="1" class="slider" />
+
+                </h1>
+            </div>
+            <div>
+                <h1 style="font-style: thin ; font-family: Helvetica Neue LT Pro;  font-size: 16px;">
+
+                    Shininess <input id="ShininessSlider" type="range" min="1.0" max="100.0" step="5.0" value="1" class="slider" />
+
+                </h1>
+            </div>
+            <div>
+                <h1 style="font-style: thin ; font-family: Helvetica Neue LT Pro;  font-size: 16px;">
+
+                    Light Diffuse <input id="diffuseSlider" type="range" min="-1.0" max="1.0" step="0.1" value="1" class="slider" />
+
+                </h1>
+            </div>
+            <div>
+                <h1 style="font-style: thin ; font-family: Helvetica Neue LT Pro;  font-size: 16px;">
+
+                   Light Ambient <input id="ambientSlider" type="range" min="-1.0" max="1.0" step="0.1" value="1" class="slider" />
+
+                </h1>
+            </div>
+            <div>
+                <h1 style="font-style: thin ; font-family: Helvetica Neue LT Pro;  font-size: 16px;">
+
+                    Light Specular <input id="specularSlider" type="range" min="-1.0" max="1.0" step="0.1" value="1" class="slider" />
+
+                </h1>
+            </div>
+        <div>
+            <h1 style="font-style: thin ; font-family: Helvetica Neue LT Pro;  font-size: 16px;">
+
+                Material Diffuse <input id="MaterialDiffuseSlider" type="range" min="-1.0" max="1.0" step="0.1" value="1" class="slider" />
+
+            </h1>
+        </div>
+        <div>
+            <h1 style="font-style: thin ; font-family: Helvetica Neue LT Pro;  font-size: 16px;">
+
+                Material Ambient <input id="MaterialAmbientSlider" type="range" min="-1.0" max="1.0" step="0.1" value="1" class="slider" />
+
+            </h1>
+        </div>
+        <div>
+            <h1 style="font-style: thin ; font-family: Helvetica Neue LT Pro;  font-size: 16px;">
+
+                Material Specular <input id="MaterialSpecularSlider" type="range" min="-1.0" max="1.0" step="0.1" value="1" class="slider" />
+
+            </h1>
+        </div>
+        <div>
+            <h1 style="font-style: thin ; font-family: Helvetica Neue LT Pro;  font-size: 16px;">
+
+                Light Position 1 <input id="lightPosition1Slider" type="range" min="-1.0" max="1.0" step="0.1" value="1" class="slider" />
+
+            </h1>
+        </div>
+        <div>
+            <h1 style="font-style: thin ; font-family: Helvetica Neue LT Pro;  font-size: 16px;">
+
+                Color1 <input id="color" type="color"> 
+
+            </h1>
+        </div>
+        </div>
+    </div>
+</body>
+
+</html>
