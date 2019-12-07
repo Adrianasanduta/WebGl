@@ -701,57 +701,9 @@ console.log(lightPosition2)
     var getCylinderButton = document.getElementById("GetCylinder");
     var vColor = gl.getAttribLocation(program, "vColor");
 
-    const verticesFile = [[-1, -1, 1],[1, -1, 1],[1, 1, 1],[1, 1, 1],[-1, 1, 1],[-1, -1, 1],[1, 1, -1],[1, -1, -1],
-    [-1, -1, -1],[-1, -1, -1], [-1, 1, -1], [1, 1, -1], [1, 1, 1], [1, 1, -1], [-1, 1, -1], [-1, 1, -1], [-1, 1, 1]
-    ,[1, 1, 1]
-    ,[1, -1, 1]
-    ,[1, -1, -1]
-    ,[1, 1, -1]
-    ,[1, 1, -1]
-    ,[1, 1, 1]
-    ,[1, -1, 1]
-    ,[-1, -1, 1]
-    ,[-1, -1, -1]
-    ,[1, -1, -1]
-    ,[1, -1, -1]
-    ,[1, -1, 1]
-    ,[-1, -1, 1]
-    ,[-1, 1, 1]
-    ,[-1, 1, -1]
-    ,[-1, -1, -1]
-    ,[-1, -1, -1]
-    ,[-1, -1, 1]
-    ,[-1, 1, 1]];
+    function ObjFromFile(vertices, normals, textures) {
+        // TODO: use textures
 
-    const normalsFile = [[0, 0, 1, 1],[0, 0, 1, 1],[0, 0, 1, 1],[0, 0, 1, 1],[0, 0, 1, 1],[0, 0, 1, 1],[0, 0, -1, 1],[0, 0, -1, 1],[0, 0, -1, 1],[0, 0, -1, 1]
-    ,[0, 0, -1, 1]
-    ,[0, 0, -1, 1]
-    ,[0, 1, -0, 1]
-    ,[0, 1, -0, 1]
-    ,[0, 1, -0, 1]
-    ,[0, 1, -0, 1]
-    ,[0, 1, -0, 1]
-    ,[0, 1, -0, 1]
-    ,[1, 0, -0, 1]
-    ,[1, 0, -0, 1]
-    ,[1, 0, -0, 1]
-    ,[1, 0, -0, 1]
-    ,[1, 0, -0, 1]
-    ,[1, 0, -0, 1]
-    ,[0, -1, -0, 1]
-    ,[0, -1, -0, 1]
-    ,[0, -1, -0, 1]
-    ,[0, -1, -0, 1]
-    ,[0, -1, -0, 1]
-    ,[0, -1, -0, 1]
-    ,[-1, 0, -0, 1]
-    ,[-1, 0, -0, 1]
-    ,[-1, 0, -0, 1]
-    ,[-1, 0, -0, 1]
-    ,[-1, 0, -0, 1]
-    ,[-1, 0, -0, 1]];
-
-    function ObjFromFile(vertices, normals) {
         this.colors = [];
 
         this.sxAxis = 0;
@@ -963,6 +915,51 @@ console.log(lightPosition2)
 
     }
 
+    function handleFileSelect(evt) {
+        const vRegExp = /^v\s+(.+)$/gm
+        const vnRegExp = /^vn\s+(.+)$/gm
+        const vtRegExp = /^vt\s+(.+)$/gm
+        const fRegExp = /^f\s+(.+)$/gm
+
+        const file = evt.target.files[0]; // fisrt file from FileList object
+
+        var reader = new FileReader();
+
+      // Closure to capture the file information.
+      reader.onload = (function(theFile) {
+        return function(e) {
+            const fileContent = e.target.result;
+            const v = fileContent.match(vRegExp).map(e => e.split(/v\s+/)[1].split(' ').map(parseFloat));
+            const vn = fileContent.match(vnRegExp).map(e => e.split(/vn\s+/)[1].split(' ').map(parseFloat));
+            const vt = fileContent.match(vtRegExp).map(e => e.split(/vt\s+/)[1].split(' ').map(parseFloat));
+            const f = fileContent.match(fRegExp).map(e => e.split(/f\s+/)[1].split(' ').filter(Boolean)).flat();
+
+            console.log({v, vn, vt, f});
+
+            const vertices = [];
+            const normals = [];
+            const textures = [];
+
+            f.forEach((e) => {
+                const [ver, tex, norm] = e.split('/').map(Number);
+                vertices.push(v[ver - 1]);
+                textures.push(vt[tex - 1]);
+                normals.push(vn[norm - 1]);
+            });
+
+
+            // create obj
+            const obj1 = new ObjFromFile(vertices, normals, textures);
+            obj1.render();
+            objects.push(obj1);
+            currentSelectIndex = objects.length - 1
+        };
+      })(file);
+
+      reader.readAsText(file);
+      }
+
+    document.getElementById('file').addEventListener('change', handleFileSelect, false);
 
     getConeButton.onclick = function () {
 
