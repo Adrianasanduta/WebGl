@@ -32,8 +32,8 @@ const at = vec3(0.0, 0.0, 0.0);
 const up = vec3(0.0, 1.0, 0.0);
 
 //light
-var lightPosition = vec4(1.0, 1.0, -1.0, 0.0);
-var lightPosition1 = vec4(1.0, 1.0, 1.0, 0.0);
+var lightPosition = vec4(-500, 1.0, -1.0, 0.0);
+var lightPosition1 = vec4(10, -1, 1.0, 0.0);
 var lightPosition2 = vec4(0.0, 1.0, 1.0, 0.0);
 var lightAmbient = vec4(0.2, 0.2, 0.2, 1.0);
 var lightDiffuse = vec4(1.0, 1.0, 1.0, 1.0);
@@ -274,7 +274,7 @@ window.onload = function init() {
                 flatten(lightPosition1));
                 gl.uniform4fv(gl.getUniformLocation(program, "lightPosition2"),
                 flatten(lightPosition2));
-
+console.log(lightPosition2)
             gl.uniform1f(gl.getUniformLocation(program, "shininess"), materialShininess);
 
         }
@@ -282,7 +282,6 @@ window.onload = function init() {
         createObjectButton();
 
     }
-
     function Cylinder() {
         this.sxAxis = 0;
         this.syAxis = 1;
@@ -428,7 +427,7 @@ window.onload = function init() {
             this.scaleMatrix[this.saxis] = this.scale;
             gl.uniform3fv(globalScale, this.scaleMatrix);
 
-            this.flag = false;
+          ///////  this.flag = false;
             if (this.flag)
                 this.theta[this.axis] += 2.0;
             gl.uniform3fv(thetaLoc, this.theta);
@@ -436,16 +435,33 @@ window.onload = function init() {
 
             var ambientProduct = mult(lightAmbient, materialAmbient);
             var diffuseProduct = mult(lightDiffuse, materialDiffuse);
+            var diffuseProduct1 = mult(lightDiffuse1, materialDiffuse);
+            var diffuseProduct2 = mult(lightDiffuse2, materialDiffuse);
             var specularProduct = mult(lightSpecular, materialSpecular);
+            var specularProduct1 = mult(lightSpecular1, materialSpecular);
+            var specularProduct2 = mult(lightSpecular2, materialSpecular);
 
             gl.uniform4fv(gl.getUniformLocation(program, "ambientProduct"),
                 flatten(ambientProduct));
             gl.uniform4fv(gl.getUniformLocation(program, "diffuseProduct"),
                 flatten(diffuseProduct));
+            gl.uniform4fv(gl.getUniformLocation(program, "diffuseProduct1"),
+                flatten(diffuseProduct1));
+                gl.uniform4fv(gl.getUniformLocation(program, "diffuseProduct2"),
+                flatten(diffuseProduct2));
             gl.uniform4fv(gl.getUniformLocation(program, "specularProduct"),
                 flatten(specularProduct));
+            gl.uniform4fv(gl.getUniformLocation(program, "specularProduct1"),
+                flatten(specularProduct1));
+            gl.uniform4fv(gl.getUniformLocation(program, "specularProduct2"),
+                flatten(specularProduct2));
             gl.uniform4fv(gl.getUniformLocation(program, "lightPosition"),
                 flatten(lightPosition));
+            gl.uniform4fv(gl.getUniformLocation(program, "lightPosition1"),
+                flatten(lightPosition1));
+            gl.uniform4fv(gl.getUniformLocation(program, "lightPosition2"),
+                flatten(lightPosition2));
+ 
 
             gl.uniform1f(gl.getUniformLocation(program, "shininess"), materialShininess);
 
@@ -453,6 +469,9 @@ window.onload = function init() {
         }
 
     }
+
+
+
 
     function Sphere() {
         this.sxAxis = 0;
@@ -601,8 +620,7 @@ window.onload = function init() {
             gl.bindBuffer(gl.ARRAY_BUFFER, colorsId);
             gl.bufferData(gl.ARRAY_BUFFER, flatten(this.colors), gl.STATIC_DRAW);
 
-            gl.vertexAttribPointer(vColor, 3, gl.FLOAT, false, 0, 0);
-            gl.enableVertexAttribArray(vColor);
+           
 
             this.translationMatrix[this.taxis] = this.translation;
             gl.uniform3fv(globalPosition, this.translationMatrix);
@@ -618,16 +636,32 @@ window.onload = function init() {
 
             var ambientProduct = mult(lightAmbient, materialAmbient);
             var diffuseProduct = mult(lightDiffuse, materialDiffuse);
+            var diffuseProduct1 = mult(lightDiffuse1, materialDiffuse);
+            var diffuseProduct2 = mult(lightDiffuse2, materialDiffuse);
             var specularProduct = mult(lightSpecular, materialSpecular);
+            var specularProduct1 = mult(lightSpecular1, materialSpecular);
+            var specularProduct2 = mult(lightSpecular2, materialSpecular);
 
             gl.uniform4fv(gl.getUniformLocation(program, "ambientProduct"),
                 flatten(ambientProduct));
             gl.uniform4fv(gl.getUniformLocation(program, "diffuseProduct"),
                 flatten(diffuseProduct));
+            gl.uniform4fv(gl.getUniformLocation(program, "diffuseProduct1"),
+                flatten(diffuseProduct1));
+                gl.uniform4fv(gl.getUniformLocation(program, "diffuseProduct2"),
+                flatten(diffuseProduct2));
             gl.uniform4fv(gl.getUniformLocation(program, "specularProduct"),
                 flatten(specularProduct));
+            gl.uniform4fv(gl.getUniformLocation(program, "specularProduct1"),
+                flatten(specularProduct1));
+            gl.uniform4fv(gl.getUniformLocation(program, "specularProduct2"),
+                flatten(specularProduct2));
             gl.uniform4fv(gl.getUniformLocation(program, "lightPosition"),
                 flatten(lightPosition));
+            gl.uniform4fv(gl.getUniformLocation(program, "lightPosition1"),
+                flatten(lightPosition1));
+            gl.uniform4fv(gl.getUniformLocation(program, "lightPosition2"),
+                flatten(lightPosition2));
 
             gl.uniform1f(gl.getUniformLocation(program, "shininess"), materialShininess);
 
@@ -667,8 +701,157 @@ window.onload = function init() {
     var getCylinderButton = document.getElementById("GetCylinder");
     var vColor = gl.getAttribLocation(program, "vColor");
 
+    const verticesFile = [[-1, -1, 1],[1, -1, 1],[1, 1, 1],[1, 1, 1],[-1, 1, 1],[-1, -1, 1],[1, 1, -1],[1, -1, -1],
+    [-1, -1, -1],[-1, -1, -1], [-1, 1, -1], [1, 1, -1], [1, 1, 1], [1, 1, -1], [-1, 1, -1], [-1, 1, -1], [-1, 1, 1]
+    ,[1, 1, 1]
+    ,[1, -1, 1]
+    ,[1, -1, -1]
+    ,[1, 1, -1]
+    ,[1, 1, -1]
+    ,[1, 1, 1]
+    ,[1, -1, 1]
+    ,[-1, -1, 1]
+    ,[-1, -1, -1]
+    ,[1, -1, -1]
+    ,[1, -1, -1]
+    ,[1, -1, 1]
+    ,[-1, -1, 1]
+    ,[-1, 1, 1]
+    ,[-1, 1, -1]
+    ,[-1, -1, -1]
+    ,[-1, -1, -1]
+    ,[-1, -1, 1]
+    ,[-1, 1, 1]];
+
+    const normalsFile = [[0, 0, 1, 1],[0, 0, 1, 1],[0, 0, 1, 1],[0, 0, 1, 1],[0, 0, 1, 1],[0, 0, 1, 1],[0, 0, -1, 1],[0, 0, -1, 1],[0, 0, -1, 1],[0, 0, -1, 1]
+    ,[0, 0, -1, 1]
+    ,[0, 0, -1, 1]
+    ,[0, 1, -0, 1]
+    ,[0, 1, -0, 1]
+    ,[0, 1, -0, 1]
+    ,[0, 1, -0, 1]
+    ,[0, 1, -0, 1]
+    ,[0, 1, -0, 1]
+    ,[1, 0, -0, 1]
+    ,[1, 0, -0, 1]
+    ,[1, 0, -0, 1]
+    ,[1, 0, -0, 1]
+    ,[1, 0, -0, 1]
+    ,[1, 0, -0, 1]
+    ,[0, -1, -0, 1]
+    ,[0, -1, -0, 1]
+    ,[0, -1, -0, 1]
+    ,[0, -1, -0, 1]
+    ,[0, -1, -0, 1]
+    ,[0, -1, -0, 1]
+    ,[-1, 0, -0, 1]
+    ,[-1, 0, -0, 1]
+    ,[-1, 0, -0, 1]
+    ,[-1, 0, -0, 1]
+    ,[-1, 0, -0, 1]
+    ,[-1, 0, -0, 1]];
+
+    function ObjFromFile(vertices, normals) {
+        this.colors = [];
+
+        this.sxAxis = 0;
+        this.syAxis = 1;
+        this.szAxis = 2;
+        this.colors = [];
+        this.xScale = 1;
+        this.yScale = 1;
+        this.zScale = 1;
+        this.scaleMatrix = [this.xScale, this.yScale, this.zScale];
+        this.scale = 1;
+
+        this.translation = 0;
+        this.xTranslation = 0;
+        this.yTranslation = 0;
+        this.zTranslation = 0;
+        this.translationMatrix = [this.xTranslation, this.yTranslation, this.zTranslation];
+
+        this.txAxis = 0;
+        this.tyAxis = 1;
+        this.tzAxis = 2;
+
+        this.xAxis = 0;
+        this.yAxis = 1;
+        this.zAxis = 2;
+
+        this.selected = false;
+        this.axis = 0;
+        this.theta = [0, 0, 0];
+        this.flag = false;
+        this.vertices = vertices;
+        this.normals = normals;
+        this.r = 0.2;
+        this.h = 0.5;
+        this.pas = 0.3;
+
+        this.color = vec4(this.r_color, this.g_color, this.b_color, this.transparency);
 
 
+        this.color = function (r_color, g_color, b_color, transparency) {
+
+            this.r_color = r_color;
+            this.g_color = g_color;
+            this.b_color = b_color;
+            this.transparency = transparency;
+            for (var i = 0; i < this.vertices.length; i++) {
+                this.colors.push(vec4(this.r_color, this.g_color, this.b_color, this.transparency));
+
+            }
+        }
+
+
+
+        this.render = function () {
+
+            var nBuffer = gl.createBuffer();
+            gl.bindBuffer(gl.ARRAY_BUFFER, nBuffer);
+            gl.bufferData(gl.ARRAY_BUFFER, flatten(this.normals), gl.STATIC_DRAW);
+
+            gl.vertexAttribPointer(vNormal, 4, gl.FLOAT, false, 0, 0);
+            gl.enableVertexAttribArray(vNormal);
+
+            var vBuffer = gl.createBuffer();
+            gl.bindBuffer(gl.ARRAY_BUFFER, vBuffer);
+            gl.bufferData(gl.ARRAY_BUFFER, flatten(this.vertices), gl.STATIC_DRAW);
+
+            gl.vertexAttribPointer(vPosition, 3, gl.FLOAT, false, 0, 0);
+            gl.enableVertexAttribArray(vPosition);
+
+            this.translationMatrix[this.taxis] = this.translation;
+            gl.uniform3fv(globalPosition, this.translationMatrix);
+
+            this.scaleMatrix[this.saxis] = this.scale;
+            gl.uniform3fv(globalScale, this.scaleMatrix);
+
+            if (this.flag)
+                this.theta[this.axis] += 2.0;
+            gl.uniform3fv(thetaLoc, this.theta);
+            gl.drawArrays(gl.TRIANGLES, 0, this.vertices.length);
+
+            var ambientProduct = mult(lightAmbient, materialAmbient);
+            var diffuseProduct = mult(lightDiffuse, materialDiffuse);
+            var specularProduct = mult(lightSpecular, materialSpecular);
+
+            gl.uniform4fv(gl.getUniformLocation(program, "ambientProduct"),
+                flatten(ambientProduct));
+            gl.uniform4fv(gl.getUniformLocation(program, "diffuseProduct"),
+                flatten(diffuseProduct));
+            gl.uniform4fv(gl.getUniformLocation(program, "specularProduct"),
+                flatten(specularProduct));
+            gl.uniform4fv(gl.getUniformLocation(program, "lightPosition"),
+                flatten(lightPosition));
+
+            gl.uniform1f(gl.getUniformLocation(program, "shininess"), materialShininess);
+
+        }
+
+        createObjectButton();
+
+    }
 
 
     function Obj() {
@@ -731,7 +914,7 @@ window.onload = function init() {
             gl.bindBuffer(gl.ARRAY_BUFFER, nBuffer);
             gl.bufferData(gl.ARRAY_BUFFER, flatten(this.normals), gl.STATIC_DRAW);
 
-            gl.vertexAttribPointer(vNormal, 3, gl.FLOAT, false, 0, 0);
+            gl.vertexAttribPointer(vNormal, 4, gl.FLOAT, false, 0, 0);
             gl.enableVertexAttribArray(vNormal);
 
             var vBuffer = gl.createBuffer();
@@ -811,6 +994,17 @@ window.onload = function init() {
         currentSelectIndex = objects.length - 1
 
     };
+
+
+
+
+    //After loading file and parsing it, we obtain the array of vertices, normals and texture
+    //after that, call objfromFile with those arrays 
+    //     var obj1 = new ObjFromFile(verticesFile, normalsFile);
+    //     obj1.render();
+    //     objects.push(obj1);
+    //     currentSelectIndex = objects.length - 1
+
     var slidertx = document.getElementById("xTranslationSlider");
     slidertx.oninput = function () {
         console.log(this.value);
@@ -932,16 +1126,19 @@ window.onload = function init() {
     
     var lightposition_Slider = document.getElementById("lightPositionSlider");
     lightposition_Slider.oninput = function () {
-        lightPosition = vec4(this.value, this.value, this.value/2, this.value);
+        lightPosition = vec4(lightPosition[0], this.value, lightPosition[2], 1);
     }
     var lightposition1_Slider = document.getElementById("lightPosition1Slider");
     lightposition1_Slider.oninput = function () {
-        lightPosition = vec4(this.value, this.value, -this.value, this.value);
+        lightPosition1 = vec4(this.value, this.value, -this.value, this.value);
     }
     var lightposition2_Slider = document.getElementById("lightPosition2Slider");
     lightposition2_Slider.oninput = function () {
-        lightPosition = vec4(-this.value, this.value, this.value, this.value);
+        lightPosition2 = vec4(-this.value, this.value, this.value, this.value);
     }
+
+
+
     function getRGBfromHex(hexValue) {
         const reg = /#([0-9a-fA-F]{2})([0-9a-fA-F]{2})([0-9a-fA-F]{2})/;
         const match = reg.exec(hexValue);

@@ -72,11 +72,14 @@ main()
     vec3 light1 = lightPosition1.xyz;
     vec3 light2 = lightPosition2.xyz;
 
+    float distance = length(light-pos);
+    float distance1 = length(light1-pos);
+    float distance2 = length(light2-pos);
+
     vec3 L = normalize( light - pos );
     vec3 L1 = normalize( light1 - pos );
     vec3 L2 = normalize( light2 - pos );
 
-	
     vec3 E = normalize( -pos );
     vec3 H = normalize( L + E );
     vec3 H1 = normalize( L1 + E );
@@ -92,7 +95,7 @@ main()
     float Kd = max( dot(L, N), 0.0 );
     float Kd1 = max( dot(L1, N), 0.0 );
     float Kd2 = max( dot(L2, N), 0.0 );
-
+    
     vec4  diffuse = Kd*diffuseProduct;
     vec4  diffuse1 = Kd1*diffuseProduct1;
     vec4  diffuse2 = Kd2*diffuseProduct2;
@@ -116,7 +119,7 @@ main()
             specular2 = vec4(0.0, 0.0, 0.0, 1.0);
             } 
     //gl_Position = rx * ry * rz * vPosition * projectionMatrix * modelViewMatrix;
-    fColor = ambient + diffuse +specular + diffuse1 + diffuse2 + specular1 + specular2;
+    fColor = ambient + diffuse +specular + diffuse1 + specular1 + diffuse2 + specular2;
     
     fColor.a = 1.0;
     gl_Position =  projectionMatrix * modelViewMatrix*t * rz * ry * rx * scl * vPosition ;
@@ -160,6 +163,13 @@ main()
     <button
       style="background:orange ; border-radius: 30px; color: white; border: none; padding: 3px 13px; font-size: 25px; position: absolute; top: 5%; right: 77.5%; font-style: thin ; "
       ; id="GetSphere">Sphere</button>
+    <button
+      style="background:orange ; border-radius: 30px; color: white; border: none; padding: 3px 13px; font-size: 25px; position: absolute; top: 5%; right: 65.5%; font-style: thin ; "
+      ; id="GetSphere">Load Obj</button>
+      <button
+      style="background:chocolate ; border-radius: 30px; color: white; border: none; padding: 3px 13px; font-size: 25px; position: absolute; top: 5%; right: 55.5%; font-style: thin ; "
+      ; id="GetSphere">Load Texture</button>
+      
 
 
   </div>
@@ -295,7 +305,23 @@ main()
       <div>
         <h1 style="font-style: thin ; font-family: Helvetica Neue LT Pro;  font-size: 16px;">
 
-          Shininess <input id="ShininessSlider" type="range" min="1.0" max="100.0" step="5.0" value="1"
+          Shininess Sphere <input id="ShininessSlider" type="range" min="1.0" max="100.0" step="5.0" value="1"
+            class="slider" />
+
+        </h1>
+      </div>
+      <div>
+        <h1 style="font-style: thin ; font-family: Helvetica Neue LT Pro;  font-size: 16px;">
+
+          Shininess Cone <input id="ShininessSlider" type="range" min="1.0" max="100.0" step="5.0" value="1"
+            class="slider" />
+
+        </h1>
+      </div>
+      <div>
+        <h1 style="font-style: thin ; font-family: Helvetica Neue LT Pro;  font-size: 16px;">
+
+          Shininess Cylinder <input id="ShininessSlider" type="range" min="1.0" max="100.0" step="5.0" value="1"
             class="slider" />
 
         </h1>
@@ -355,8 +381,6 @@ main()
       </div>
 
 
-
-
       <div>
         <h1 style="font-style: thin ; font-family: Helvetica Neue LT Pro;  font-size: 16px;">
 
@@ -384,7 +408,7 @@ main()
       <div>
         <h1 style="font-style: thin ; font-family: Helvetica Neue LT Pro;  font-size: 16px;">
 
-          Light Position 1 <input id="lightPositionSlider" type="range" min="-1.0" max="1.0" step="0.1" value="1"
+          Light Position 1 <input id="lightPositionSlider" type="range" min="-100" max="100" step="0.1" value="1"
             class="slider" />
 
         </h1>
@@ -392,7 +416,7 @@ main()
       <div>
         <h1 style="font-style: thin ; font-family: Helvetica Neue LT Pro;  font-size: 16px;">
 
-          Light Position 2 <input id="lightPosition1Slider" type="range" min="-1.0" max="1.0" step="0.1" value="1"
+          Light Position 2 <input id="lightPosition1Slider" type="range" min="-100" max="100" step="0.1" value="1"
             class="slider" />
 
         </h1>
@@ -400,7 +424,7 @@ main()
       <div>
         <h1 style="font-style: thin ; font-family: Helvetica Neue LT Pro;  font-size: 16px;">
 
-          Light Position 3 <input id="lightPosition2Slider" type="range" min="-1.0" max="1.0" step="0.1" value="1"
+          Light Position 3 <input id="lightPosition2Slider" type="range" min="-100" max="100" step="0.1" value="1"
             class="slider" />
 
         </h1>
