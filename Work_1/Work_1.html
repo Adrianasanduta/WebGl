@@ -16,7 +16,9 @@ uniform vec3 scale;
 attribute vec4 vColor;
 uniform mat4 modelViewMatrix;
 uniform mat4 projectionMatrix;
+attribute vec2 vTextureCoord; // texture coords were passed here from JS
 
+varying vec2 fTextureCoord;
 uniform vec4 ambientProduct, diffuseProduct, specularProduct;
 uniform vec4 diffuseProduct1, specularProduct1;
 uniform vec4 diffuseProduct2, specularProduct2;
@@ -124,17 +126,20 @@ main()
     fColor.a = 1.0;
     gl_Position =  projectionMatrix * modelViewMatrix*t * rz * ry * rx * scl * vPosition ;
     //gl_Position = projectionMatrix  * rz * ry * rx * modelViewMatrix * vPosition;
-  
+    fTextureCoord = vTextureCoord;
     }
 </script>
 
   <script id="fragment-shader" type="x-shader/x-fragment">
 precision mediump float;
 varying vec4 fColor;
+uniform sampler2D textureData; // current texture number, passed from JS
+varying vec2 fTextureCoord;
 void
 main()
 {
-   gl_FragColor = fColor;
+  vec4 colorFromTexture = texture2D(textureData, fTextureCoord); // getting the color for the pixel based on texture coordinates
+  gl_FragColor = colorFromTexture * 0.8 + 0.2 * fColor; // setting the color from the texture to the pixel
 }
 </script>
   <script type="text/javascript" src="../Common/webgl-utils.js"></script>
@@ -164,6 +169,9 @@ main()
       style="background:orange ; border-radius: 30px; color: white; border: none; padding: 3px 13px; font-size: 25px; position: absolute; top: 5%; right: 77.5%; font-style: thin ; "
       ; id="GetSphere">Sphere</button>
 
+      <input type="file" id="file" name="files[]"
+      style="background:orange ; border-radius: 30px; color: white; border: none; padding: 3px 13px; font-size: 25px; position: absolute; top: 5%; right: 45.5%; font-style: thin ; "
+      />
       <input type="file" id="file" name="files[]"
       style="background:orange ; border-radius: 30px; color: white; border: none; padding: 3px 13px; font-size: 25px; position: absolute; top: 5%; right: 45.5%; font-style: thin ; "
       />
